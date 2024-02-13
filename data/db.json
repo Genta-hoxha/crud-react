@@ -1,3 +1,26 @@
 {
-  "todos": []
+  "todos": [
+    {
+      "id": "d96a",
+      "title": "GENTA",
+      "description": "This is a description of the task.",
+      "completed": false
+    },
+    {
+      "id": "f7bc",
+      "userId": 1,
+      "title": "GENTA HOXHA",
+      "completed": false
+    },
+    {
+      "id": "d157",
+      "title": "ygikse"
+    },
+    {
+      "id": "256a",
+      "userId": 1,
+      "title": "",
+      "completed": false
+    }
+  ]
 }
