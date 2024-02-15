@@ -7,15 +7,17 @@ import {
   useUpdateTodoMutation,
   useDeleteTodoMutation,
 } from "../api/apiSlice";
-// ... (previous imports)
+import Modal from "./Modal";
 
 const TodoList = () => {
-  const [newTodo, setNewTodo] = useState("");
+  const [newTodoTitle, setNewTodoTitle] = useState("");
+  const [newDescription, setNewDescription] = useState("");
   const [addInEdit, setAddInEdit] = useState({
     show: false,
     id: null,
   });
-  const [editInput, setEditInput] = useState("");
+  const [editInputTitle, setEditInputTitle] = useState("");
+  const [editInputDescription, setEditInputDescription] = useState("");
   const [expandedIds, setExpandedIds] = useState([]);
   const {
     data: todos,
@@ -28,11 +30,38 @@ const TodoList = () => {
   const [addTodo] = useAddTodoMutation();
   const [updateTodo] = useUpdateTodoMutation();
   const [deleteTodo] = useDeleteTodoMutation();
+  const [modalIsShown, setModalIsShown] = useState(false);
+  const [addedItem, setAddedItem] = useState(null);
 
+  const showModal = () => {
+    setModalIsShown(true);
+  };
+
+  const hideModal = () => {
+    setModalIsShown(false);
+  };
   const handleSubmit = (e) => {
     e.preventDefault();
-    addTodo({ userId: 1, title: newTodo, completed: false });
-    setNewTodo("");
+    addTodo({
+      userId: 1,
+      title: newTodoTitle,
+      description: newDescription,
+      completed: false,
+    })
+      .unwrap()
+      .then((response) => {
+        const newItem = response.payload;
+        setNewTodoTitle("");
+        setNewDescription("");
+        hideModal();
+        setAddedItem({
+          title: newItem.title,
+          description: newItem.description,
+        });
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   };
 
   const editItem = (id) => {
@@ -40,21 +69,30 @@ const TodoList = () => {
 
     const currentItem = todos.find((todo) => todo.id === id);
     if (currentItem) {
-      setEditInput(currentItem.title || "");
+      setEditInputTitle(currentItem.title || "");
+      setEditInputDescription(currentItem.description || "");
     }
   };
 
   const funEditUpdate = (event) => {
-    setEditInput(event.target.value.trim());
+    setEditInputTitle(event.target.value.trim());
   };
 
+  const funDescriptionUpdate = (event) => {
+    setEditInputDescription(event.target.value.trim());
+  };
   const handleEditSubmit = () => {
-    if (addInEdit.id && editInput) {
-      updateTodo({ id: addInEdit.id, title: editInput })
+    if (addInEdit.id && editInputTitle && editInputDescription) {
+      updateTodo({
+        id: addInEdit.id,
+        title: editInputTitle,
+        description: editInputDescription,
+      })
         .unwrap()
         .then(() => {
           setAddInEdit({ show: false, id: null });
-          setEditInput("");
+          setEditInputTitle("");
+          setEditInputDescription("");
           refetchTodos();
         })
         .catch((error) => {
@@ -72,22 +110,42 @@ const TodoList = () => {
     );
   };
   const newItemSection = (
-    <form onSubmit={handleSubmit}>
-      <label htmlFor="new-todo">Enter a new todo item</label>
-      <div className="new-todo">
-        {" "}
-        <input
-          type="text"
-          id="new-todo"
-          value={newTodo}
-          onChange={(e) => setNewTodo(e.target.value)}
-          placeholder="Enter new todo"
-        />
-        <button className="submit" type="submit">
-          <FontAwesomeIcon icon={faUpload} />
-        </button>{" "}
+    <>
+      <div>
+        <button onClick={showModal} className="btn">
+          Create new Item +
+        </button>
+        <Modal isOpen={modalIsShown}>
+          <h2>Create a New Todo Item</h2>
+          <form onSubmit={handleSubmit}>
+            <label htmlFor="title">Title </label>
+            <input
+              type="text"
+              name="title"
+              id="new-todo"
+              required
+              onChange={(e) => setNewTodoTitle(e.target.value)}
+            />
+            <br /> <br />
+            <label htmlFor="description">Description </label>
+            <textarea
+              rows="4"
+              cols="30"
+              name="description"
+              form="usrform"
+              id="new-todo1"
+              type="text"
+              required
+              onChange={(e) => setNewDescription(e.target.value)}
+            ></textarea>
+            <div className="buttons">
+              <button type="submit">Submit</button>
+              <button onClick={hideModal}>Close</button>
+            </div>{" "}
+          </form>
+        </Modal>
       </div>
-    </form>
+    </>
   );
 
   let content = null;
@@ -105,38 +163,63 @@ const TodoList = () => {
                   expandedIds.includes(todo.id) ? "-expanded" : ""
                 }`}
               >
-                <label className="switch">
-                  <input
-                    type="checkbox"
-                    checked={todo.completed}
-                    onChange={() =>
-                      updateTodo({
-                        ...todo,
-                        completed: !todo.completed,
-                      })
-                    }
-                  />
-                  <span className="slider"></span>
-                </label>
-
-                {addInEdit.show && addInEdit.id === todo.id ? (
-                  <>
+                <div className="switchheader">
+                  <label className="switch">
                     <input
-                      type="text"
-                      placeholder="Edit"
-                      onChange={funEditUpdate}
-                      value={editInput}
+                      type="checkbox"
+                      checked={todo.completed}
+                      onChange={() =>
+                        updateTodo({
+                          ...todo,
+                          completed: !todo.completed,
+                        })
+                      }
                     />
 
+                    <span className="slider"></span>
+                  </label>
+                </div>
+
+                {addInEdit.show && addInEdit.id === todo.id ? (
+                  <div className="editing">
+                    <input
+                      type="text"
+                      placeholder="Edit Title"
+                      onChange={funEditUpdate}
+                      value={editInputTitle}
+                    />
+                    {/* <input
+                      type="text"
+                      placeholder="Edit Description"
+                      onChange={funDescriptionUpdate}
+                      value={editInputDescription}
+                    /> */}
+                    <textarea
+                      rows="4"
+                      cols="50"
+                      name="comment"
+                      form="usrform"
+                      type="text"
+                      onChange={funDescriptionUpdate}
+                      value={editInputDescription}
+                    ></textarea>
                     <button className="save" onClick={handleEditSubmit}>
                       Save
                     </button>
-                  </>
+                  </div>
                 ) : (
-                  <label htmlFor={todo.id}>{todo.title || "Untitled"}</label>
+                  <div className="content">
+                    <label htmlFor={todo.id} id="title">
+                      {todo.title || "Untitled"}
+                    </label>
+
+                    <label htmlFor={todo.id} id="description">
+                      {todo.description || "Untitled"}
+                    </label>
+                  </div>
                 )}
               </div>
-              <div>
+              <div className="editdelete">
                 {!addInEdit.show && (
                   <button className="edit" onClick={() => editItem(todo.id)}>
                     <FontAwesomeIcon icon={faEdit} />
@@ -164,184 +247,29 @@ const TodoList = () => {
   } else if (isError) {
     content = <p>{error.message}</p>;
   }
-
   return (
     <main className="todo-container">
       <h1>Todo List</h1>
       <a>{newItemSection}</a>
       {content}
+      {/* {addedItem && (
+        <div className="added-item">
+          <p>Added Item:</p>
+          <p>Title: {addedItem.title}</p>
+          <p>Description: {addedItem.description}</p>
+        </div>
+      )} */}
     </main>
   );
 };
-
-export default TodoList;
-
-// const TodoList = () => {
-//   const [newTodo, setNewTodo] = useState("");
-//   const [addInEdit, setAddInEdit] = useState({
-//     show: false,
-//     id: null,
-//   });
-//   const [editInput, setEditInput] = useState("");
-//   const [expandedId, setExpandedId] = useState(false);
-//   const {
-//     data: todos,
-//     isLoading,
-//     isSuccess,
-//     isError,
-//     error,
-//     refetch: refetchTodos,
-//   } = useGetTodosQuery();
-//   const [addTodo] = useAddTodoMutation();
-//   const [updateTodo] = useUpdateTodoMutation();
-//   const [deleteTodo] = useDeleteTodoMutation();
-
-//   const handleSubmit = (e) => {
-//     e.preventDefault();
-//     addTodo({ userId: 1, title: newTodo, completed: false });
-//     setNewTodo("");
-//   };
-
-//   const editItem = (id) => {
-//     setAddInEdit({ show: true, id });
-
-//     const currentItem = todos.find((todo) => todo.id === id);
-//     if (currentItem) {
-//       setEditInput(currentItem.title || "");
-//     }
-//   };
-
-//   const funEditUpdate = (event) => {
-//     setEditInput(event.target.value.trim());
-//   };
-
-//   const handleEditSubmit = () => {
-//     if (addInEdit.id && editInput) {
-//       updateTodo({ id: addInEdit.id, title: editInput })
-//         .unwrap()
-//         .then(() => {
-//           setAddInEdit({ show: false, id: null });
-//           setEditInput("");
-
-//           refetchTodos();
-//         })
-//         .catch((error) => {
-//           console.log(error);
-//         });
-//     }
-//   };
-//   const toggleExpand = () => {
-//     console.log("expand");
-//     setExpandedId(!expandedId);
-//     // setExpandedId((prevId) => (prevId === id ? null : id));
-//   };
-
-//   const newItemSection = (
-//     <form onSubmit={handleSubmit}>
-//       {" "}
-//       <label htmlFor="new-todo">Enter a new todo item</label>
-//       <div className="new-todo">
-//         {" "}
-//         <input
-//           type="text"
-//           id="new-todo"
-//           value={newTodo}
-//           onChange={(e) => setNewTodo(e.target.value)}
-//           placeholder="Enter new todo"
-//         />
-//         <button className="submit" type="submit">
-//           <FontAwesomeIcon icon={faUpload} />
-//         </button>{" "}
-//       </div>
-//     </form>
-//   );
-
-//   let content = null;
-
-//   if (isLoading) {
-//     content = <p>Loading...</p>;
-//   } else if (isSuccess) {
-//     content = todos.map((todo) => (
-//       <article key={todo.id} onClick={() => toggleExpand(todo.id)}>
-//         <a
-//           href={todo.link}
-//           target="_blank"
-//           rel="noopener noreferrer"
-//           className="link"
-//         >
-//           <div className={`todo${expandedId === todo.id ? "-expanded" : ""}`}>
-//             {/* <div className={`todo ${expandedId === todo.id ? "-expanded" : ""}`}> */}
-//             <label className="switch">
-//               <input
-//                 type="checkbox"
-//                 checked={todo.completed}
-//                 onChange={() =>
-//                   updateTodo({ ...todo, completed: !todo.completed })
-//                 }
-//               />
-//               <span className="slider"></span>
-//             </label>
-
-//             {addInEdit.show && addInEdit.id === todo.id ? (
-//               <>
-//                 <input
-//                   type="text"
-//                   placeholder="Edit"
-//                   onChange={funEditUpdate}
-//                   value={editInput}
-//                 />
-//                 <button className="save" onClick={handleEditSubmit}>
-//                   Save
-//                 </button>
-//               </>
-//             ) : (
-//               // <a
-//               //    href={todo.link}
-
-//               //   target="_blank"
-//               //   rel="noopener noreferrer"
-//               //   className="link"
-//               // >
-//               <label htmlFor={todo.id}>{todo.title || "Untitled"}</label>
-//             )}
-//           </div>
-//         </a>
-//         <div>
-//           {!addInEdit.show && (
-//             <button className="edit" onClick={() => editItem(todo.id)}>
-//               <FontAwesomeIcon icon={faEdit} />
-//             </button>
-//           )}
-//           <button
-//             className="trash"
-//             onClick={() =>
-//               deleteTodo({ id: todo.id })
-//                 .unwrap()
-//                 .then(() => refetchTodos())
-//                 .catch((error) => {
-//                   console.log(error);
-//                 })
-//             }
-//           >
-//             <FontAwesomeIcon icon={faTrash} />
-//           </button>
-//         </div>
-//       </article>
-//     ));
-//   } else if (isError) {
-//     content = <p>{error.message}</p>;
-//   }
 
 //   return (
 //     <main className="todo-container">
 //       <h1>Todo List</h1>
 //       <a>{newItemSection}</a>
-//       <ul className="todo-list">{content}</ul>
-
-//       {/* nuk e dua per te gjithe listen */}
-//       {/* <ul className={`todo${expandedId ? "-expanded" : "-list"}`}>{content}</ul> */}
+//       {content}
 //     </main>
 //   );
 // };
 
-// export default TodoList;
+export default TodoList;
