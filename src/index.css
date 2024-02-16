@@ -97,10 +97,10 @@ textarea[type="text"] {
 }
 
 .todo-expanded input {
-  background-color: #b9dce9;
+  background-color: #c2b7a2;
 }
 .todo-expanded textarea {
-  background-color: #b9dce9;
+  background-color: #c2b7a2;
 }
 .todo-expanded .switchheader {
   display: inline-flex;
@@ -108,10 +108,10 @@ textarea[type="text"] {
 }
 
 .todo input {
-  background-color: #b9dce9;
+  background-color: #dcd2c2;
 }
 .todo textarea {
-  background-color: #b9dce9;
+  background-color: #dcd2c2;
 }
 
 article {

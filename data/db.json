@@ -1,38 +1,23 @@
 {
   "todos": [
     {
-      "id": "a098",
+      "id": "1261",
       "userId": 1,
-      "title": "rygm",
-      "description": "ujmhy",
-      "completed": true
-    },
-    {
-      "id": "baf0",
-      "userId": 1,
-      "title": "fd",
-      "description": "AFS",
+      "title": "Task 1",
+      "description": "Learning CRUD, with database file inside the project\n",
       "completed": false
     },
     {
-      "id": "33d3",
-      "userId": 1,
-      "title": "S",
-      "description": "SS",
+      "id": "99e4",
+      "title": "Task 2",
+      "description": "Learning React Redux Toolkit(RTK)",
       "completed": true
     },
     {
-      "id": "417a",
+      "id": "a4d5",
       "userId": 1,
-      "title": "ds",
-      "description": "ds",
-      "completed": false
-    },
-    {
-      "id": "441d",
-      "userId": 1,
-      "title": "wd",
-      "description": "qw",
+      "title": "Task 3",
+      "description": "Learning React Redux Toolkit with database, using POST, GET, PUT",
       "completed": false
     }
   ]
