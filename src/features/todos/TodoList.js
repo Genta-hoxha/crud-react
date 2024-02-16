@@ -1,6 +1,7 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEdit, faTrash, faUpload } from "@fortawesome/free-solid-svg-icons";
 import { useState } from "react";
+import { useEffect } from "react";
 import {
   useGetTodosQuery,
   useAddTodoMutation,
@@ -19,6 +20,7 @@ const TodoList = () => {
   const [editInputTitle, setEditInputTitle] = useState("");
   const [editInputDescription, setEditInputDescription] = useState("");
   const [expandedIds, setExpandedIds] = useState([]);
+
   const {
     data: todos,
     isLoading,
@@ -27,6 +29,12 @@ const TodoList = () => {
     error,
     refetch: refetchTodos,
   } = useGetTodosQuery();
+  useEffect(() => {
+    const storedTodos = JSON.parse(localStorage.getItem("todos")) || [];
+    setExpandedIds(
+      storedTodos.filter((todo) => todo.completed).map((todo) => todo.id)
+    );
+  }, [todos]);
   const [addTodo] = useAddTodoMutation();
   const [updateTodo] = useUpdateTodoMutation();
   const [deleteTodo] = useDeleteTodoMutation();
@@ -40,6 +48,7 @@ const TodoList = () => {
   const hideModal = () => {
     setModalIsShown(false);
   };
+
   const handleSubmit = (e) => {
     e.preventDefault();
     addTodo({
@@ -102,13 +111,33 @@ const TodoList = () => {
   };
 
   const toggleExpand = (id) => {
-    console.log("expand");
-    setExpandedIds((prevIds) =>
-      prevIds.includes(id)
-        ? prevIds.filter((prevId) => prevId !== id)
-        : [...prevIds, id]
-    );
+    // setExpandedIds((prevIds) =>
+    //   prevIds.includes(id)
+    //     ? prevIds.filter((prevId) => prevId !== id)
+    //     : [...prevIds, id]
+    // );
+    const clickedTodo = todos.find((todo) => todo.id === id);
+    const isCompleted = clickedTodo ? clickedTodo.completed : false;
+    const backgroundColor = isCompleted ? "#d6cfc1" : "#939973";
+    const listItem = document.getElementById(`todo-item-${id}`);
+    if (listItem) {
+      listItem.style.backgroundColor = backgroundColor;
+      // Update local storage
+      const storedTodos = JSON.parse(localStorage.getItem("todos")) || [];
+      const updatedTodos = storedTodos.map((storedTodo) =>
+        storedTodo.id === id
+          ? { ...storedTodo, completed: !isCompleted }
+          : storedTodo
+      );
+      localStorage.setItem("todos", JSON.stringify(updatedTodos));
+      setExpandedIds((prevIds) =>
+        prevIds.includes(id)
+          ? prevIds.filter((prevId) => prevId !== id)
+          : [...prevIds, id]
+      );
+    }
   };
+
   const newItemSection = (
     <>
       <div>
@@ -118,28 +147,41 @@ const TodoList = () => {
         <Modal isOpen={modalIsShown}>
           <h2>Create a New Todo Item</h2>
           <form onSubmit={handleSubmit}>
-            <label htmlFor="title">Title </label>
-            <input
-              type="text"
-              name="title"
-              id="new-todo"
-              required
-              onChange={(e) => setNewTodoTitle(e.target.value)}
-            />
-            <br /> <br />
-            <label htmlFor="description">Description </label>
-            <textarea
-              rows="4"
-              cols="30"
-              name="description"
-              form="usrform"
-              id="new-todo1"
-              type="text"
-              required
-              onChange={(e) => setNewDescription(e.target.value)}
-            ></textarea>
+            <div className="row">
+              <div className="col-25">
+                <label htmlFor="title">Title </label>
+              </div>
+              <div class="col-75">
+                <input
+                  type="text"
+                  name="title"
+                  id="new-todo"
+                  required
+                  onChange={(e) => setNewTodoTitle(e.target.value)}
+                />
+              </div>
+            </div>
+            <div className="row">
+              <div className="col-25">
+                <label htmlFor="description">Description </label>
+              </div>
+              <div class="col-75">
+                <textarea
+                  rows="4"
+                  cols="30"
+                  name="description"
+                  form="usrform"
+                  id="new-todo1"
+                  type="text"
+                  required
+                  onChange={(e) => setNewDescription(e.target.value)}
+                ></textarea>
+              </div>
+            </div>
             <div className="buttons">
-              <button type="submit">Submit</button>
+              <button type="submit" id="submit">
+                Submit
+              </button>
               <button onClick={hideModal}>Close</button>
             </div>{" "}
           </form>
@@ -157,7 +199,10 @@ const TodoList = () => {
       <ul className="todo-list">
         {todos.map((todo) => (
           <li key={todo.id}>
-            <article onClick={() => toggleExpand(todo.id)}>
+            <article
+              id={`todo-item-${todo.id}`}
+              onClick={() => toggleExpand(todo.id)}
+            >
               <div
                 className={`todo${
                   expandedIds.includes(todo.id) ? "-expanded" : ""
@@ -168,12 +213,13 @@ const TodoList = () => {
                     <input
                       type="checkbox"
                       checked={todo.completed}
-                      onChange={() =>
+                      onChange={(e) => {
+                        e.stopPropagation();
                         updateTodo({
                           ...todo,
                           completed: !todo.completed,
-                        })
-                      }
+                        });
+                      }}
                     />
 
                     <span className="slider"></span>
@@ -249,7 +295,7 @@ const TodoList = () => {
   }
   return (
     <main className="todo-container">
-      <h1>Todo List</h1>
+      <h1>MY TASKS </h1>
       <a>{newItemSection}</a>
       {content}
       {/* {addedItem && (

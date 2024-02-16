@@ -1,18 +1,23 @@
 /* TodoList.css */
-
+body {
+  font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande",
+    "Lucida Sans Unicode", Geneva, Verdana, sans-serif;
+}
 .todo-container {
   font-family: "Arial", sans-serif;
   max-width: 600px;
   margin: auto;
   padding: 20px;
-  background-color: #a2c7dc;
+  background-color: #c2b7a2;
   border-radius: 10px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
 h1 {
-  color: #4d4d4d;
+  color: #3d3628;
   text-align: center;
+  font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande",
+    "Lucida Sans Unicode", Geneva, Verdana, sans-serif;
 }
 
 form {
@@ -31,41 +36,46 @@ label {
 .new-todo1 {
   display: flex;
 }
-input[type="text"] {
-  flex: 1;
-  padding: 10px;
-  border: 1px solid #a2c7dc;
+input[type="text"],
+select,
+textarea {
+  /* flex: 1; */
+  padding: 12px 12px 12px 0;
+  border: 1px solid #c2b7a2;
   border-radius: 5px;
   outline: none;
+  margin: 0 70px 0 0;
 }
 textarea[type="text"] {
   flex: 1;
   padding: 10px;
-  border: 1px solid #a2c7dc;
-  margin: 0 3px 0 73px;
+  border: 1px solid #c2b7a2;
+  margin: 0 0px 0 0px;
   border-radius: 5px;
   outline: none;
 }
 .btn {
-  background-color: #355c7d;
+  background-color: #7b6c50;
   color: white;
-  border: 12px solid #355c7d;
+  border: 12px solid #7b6c50;
   border-radius: 5px;
   cursor: pointer;
   outline: none;
 }
-
+.buttons #submit {
+  margin-right: 10px;
+}
 .submit {
-  background-color: #725a7a;
+  background-color: #7b6c50;
   color: #fff;
-  border: 1px solid #725a7a;
+  border: 1px solid #7b6c50;
   border-radius: 0 5px 5px 0;
   cursor: pointer;
   outline: none;
 }
 
 .submit:hover {
-  background-color: #725a7a;
+  background-color: #7b6c50;
 }
 
 .todo-list {
@@ -105,8 +115,8 @@ textarea[type="text"] {
 }
 
 article {
-  background-color: #a2c7dc;
-  border: 1px solid #6295b2;
+  background-color: #d6cfc1;
+  border: 1px solid #d6cfc1;
   border-radius: 10px;
   margin-bottom: 10px;
   padding: 15px;
@@ -117,7 +127,7 @@ article {
 }
 
 article:hover {
-  background-color: #b9dce9;
+  background-color: #d6cfc1;
 }
 
 .todo {
@@ -162,11 +172,11 @@ article:hover {
 }
 
 .switch input:checked + .slider {
-  background-color: #60bc5d;
+  background-color: #7b6c50;
 }
 
 .switch input:focus + .slider {
-  box-shadow: 0 0 1px #4caf50;
+  box-shadow: 0 0 1px #d2d2d9;
 }
 
 .switch input:checked + .slider:before {
@@ -175,9 +185,9 @@ article:hover {
 
 .edit,
 .save {
-  background-color: #16b0a1;
+  background-color: #537e70;
   color: #fff;
-  border: 1px solid #16b0a1;
+  border: 1px solid #537e70;
   border-radius: 5px;
   cursor: pointer;
   outline: none;
@@ -187,9 +197,9 @@ article:hover {
 }
 
 .trash {
-  background-color: #ff7582;
+  background-color: #7e5361;
   color: #fff;
-  border: 1px solid #ff7582;
+  border: 1px solid #7e5361;
   border-radius: 5px;
   cursor: pointer;
   outline: none;
@@ -200,11 +210,11 @@ article:hover {
 
 .edit:hover,
 .save:hover {
-  background-color: #16b0a1;
+  background-color: #537e70;
 }
 
 .trash:hover {
-  background-color: #ff7582;
+  background-color: #7e5361;
 }
 
 .link {
@@ -226,17 +236,17 @@ article:hover {
 }
 
 .modal {
-  background: #a2c7dc;
+  background: #c2b7a2;
   padding: 20px;
   border-radius: 5px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 0 10px #c2b7a2;
   text-align: center;
   max-width: 400px;
   width: 100%;
 }
 
 .modal button {
-  background-color: #355c7d;
+  background-color: #7b6c50;
   color: #fff;
   border: none;
   padding: 10px;
@@ -256,16 +266,18 @@ article:hover {
   display: block;
 }
 .modal button:hover {
-  background-color: #355c7d;
+  background-color: #7b6c50;
 }
 #title {
+  color: #3d3628;
   font-weight: 600;
   font-size: large;
   font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande",
     "Lucida Sans Unicode", Geneva, Verdana, sans-serif;
 }
 #description {
-  font-weight: 200;
+  color: #3d3628;
+  font-weight: 400;
   font-size: medium;
   font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande",
     "Lucida Sans Unicode", Geneva, Verdana, sans-serif;
@@ -275,14 +287,20 @@ article:hover {
   display: flex;
 }
 .editing {
+  /* display: flex;
+  flex-wrap: wrap; */
   display: flex;
+  justify-content: space-evenly;
+  align-content: center;
   flex-wrap: wrap;
+  flex-direction: column;
 }
 .buttons {
   display: block;
 }
 .col-25 {
   float: left;
+  width: 25%;
   margin-top: 6px;
 }
 
@@ -298,11 +316,6 @@ article:hover {
   clear: both;
 }
 
-.row1:after {
-  content: "";
-  display: table;
-  clear: both;
-}
 .container {
   border-radius: 5px;
   background-color: #f2f2f2;
